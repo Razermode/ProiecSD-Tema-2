@@ -24,14 +24,14 @@ class RBTree
 public:
 
     Node *root;
+    RBTree() { root = NULL; }
     void rotateLeft(Node *&root, Node *&pt);
     void rotateRight(Node *&root, Node *&pt);
-    void fixViolation(Node *&root, Node *&pt);
-    RBTree() { root = NULL; }
+    void fixViolation_RR(Node *&root, Node *&pt);
     Node *searchVal(const int n);
     void insert(const int n);
     void inorder(Node *root, int MIN_VAL, int MAX_VAL);
-    void fixDoubleBlack(Node *x);
+    void fixViolation_BB(Node *x);
     void deleteNode(Node *v);
     int searchSmaller(Node* root, const int X);
     int searchBigger(Node* root, const int X);
@@ -155,7 +155,7 @@ void RBTree::rotateRight(Node *&root, Node *&pt)
 }
 
 
-void RBTree::fixViolation(Node *&root, Node *&pt)
+void RBTree::fixViolation_RR(Node *&root, Node *&pt)
 {
     Node *parent_pt = NULL;
     Node *grand_parent_pt = NULL;
@@ -216,15 +216,15 @@ void RBTree::insert(const int data)
     Node *pt = new Node(data);
     if (!root) {
          root = BSTInsert(root, pt);
-         fixViolation(root, pt);
+         fixViolation_RR(root, pt);
     }
     else if (searchVal(data)->data != data) {
         root = BSTInsert(root, pt);
-        fixViolation(root, pt);
+        fixViolation_RR(root, pt);
     }
 }
 
-void RBTree::fixDoubleBlack(Node *x)
+void RBTree::fixViolation_BB(Node *x)
 {
     if (x == root)
       return;
@@ -237,7 +237,7 @@ void RBTree::fixDoubleBlack(Node *x)
         sibling = parent->left;
 
     if (sibling == NULL) {
-      fixDoubleBlack(parent);
+      fixViolation_BB(parent);
     } else {
       if (sibling->color == RED) {
         parent->color = RED;
@@ -247,7 +247,7 @@ void RBTree::fixDoubleBlack(Node *x)
         } else {
           rotateLeft(root, parent);
         }
-        fixDoubleBlack(x);
+        fixViolation_BB(x);
       } else {
         if ((sibling->left != NULL && sibling->left->color == RED) || (sibling->right != NULL && sibling->right->color == RED)) {
           if (sibling->left != NULL and sibling->left->color == RED) {
@@ -275,7 +275,7 @@ void RBTree::fixDoubleBlack(Node *x)
         } else {
           sibling->color = RED;
           if (parent->color == BLACK)
-            fixDoubleBlack(parent);
+            fixViolation_BB(parent);
           else
             parent->color = BLACK;
         }
@@ -299,7 +299,7 @@ void RBTree::deleteNode(Node *v)
             else
                 v_sibling = v->parent->left;
         if (uvBlack) {
-          fixDoubleBlack(v);
+          fixViolation_BB(v);
         } else {
           if (v_sibling != NULL)
             v_sibling->color = RED;
@@ -329,7 +329,7 @@ void RBTree::deleteNode(Node *v)
         delete v;
         u->parent = parent;
         if (uvBlack) {
-          fixDoubleBlack(u);
+          fixViolation_BB(u);
         } else {
           u->color = BLACK;
         }
