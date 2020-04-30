@@ -6,4 +6,4 @@ Black and Red tree implementation with the available operations:
 3. Check if the element is in list
 4. Smallest number in list bigger than an integer
 5. Biggest number in list smaller than an integer
-6. All number from the list in the interval [X,Y]
+6. All the numbers from the list in the interval [X,Y]
